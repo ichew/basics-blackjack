@@ -27,11 +27,11 @@ var BANBAN = "ban-ban";
 var BANLUCK = "ban-luck";
 var GORLENG = "gor-leng";
 var GAMEMODE = "CHOOSE_COMPUTER_PLAYER"; //game still start at CHOOSE_COMPUTER_PLAYER
-var COMPUTERWINTEXT = " wins! <br><br>Play again? Click Submit to continue.";
+var COMPUTERWINTEXT = " wins! <br><br>Play again? Click Restart to play again.";
 var PLAYERWINTEXT =
-  "Player, you won! <br><br>Play again? Click Submit to continue.";
+  "Player, you won! <br><br>Play again? Click Restart to play again.";
 var NOBODYWINEXT =
-  "Nobody win. It is a tie. <br><br>Play again? Click Submit to continue.";
+  "Nobody win. It is a tie. <br><br>Play again? Click Restart to play again.";
 var HITSTANDTOCONTINUE = `<br><br>Please key-enter "Hit" or "Stand" to continue.<br><br>`;
 var ACE = "ace";
 
@@ -41,13 +41,17 @@ var makeDeck = function () {
   // Initialise an empty deck array
   var cardDeck = [];
   // Initialise an array of the 4 suits in our deck. We will loop over this array.
-  var suits = ["hearts", "diamonds", "clubs", "spades"];
+  var suits = ["H", "D", "C", "S"];
+  var suitsFullName = ["hearts", "diamonds", "clubs", "spades"];
+  //Initialise variable to store the img
+  var imgName = "";
 
   // Loop over the suits array
   var suitIndex = 0;
   while (suitIndex < suits.length) {
     // Store the current suit in a variable
     var currentSuit = suits[suitIndex];
+    var currentSuitFullName = suitsFullName[suitIndex];
 
     // Loop from 1 to 13 to create all cards for a given suit
     // Notice rankCounter starts at 1 and not 0, and ends at 13 and not 12.
@@ -57,22 +61,29 @@ var makeDeck = function () {
       // By default, the card name is the same as rankCounter
       var cardName = rankCounter;
 
+      imgName = cardName + currentSuit + ".svg";
       // If rank is 1, 11, 12, or 13, set cardName to the ace or face card's name
       if (cardName == 1) {
         cardName = ACE;
+        imgName = "A" + currentSuit + ".svg";
       } else if (cardName == 11) {
         cardName = "jack";
+        imgName = "J" + currentSuit + ".svg";
       } else if (cardName == 12) {
         cardName = "queen";
+        imgName = "Q" + currentSuit + ".svg";
       } else if (cardName == 13) {
         cardName = "king";
+        imgName = "K" + currentSuit + ".svg";
       }
 
       // Create a new card with the current name, suit, and rank
+      // added imgName to show the images
       var card = {
         name: cardName,
-        suit: currentSuit,
+        suit: currentSuitFullName,
         rank: rankCounter,
+        img: imgName,
       };
 
       // Add the new card to the deck
@@ -170,6 +181,12 @@ var givePlayerOneMoreCard = function () {
 
   console.log("givePlayerOneMoreCard ends with sum =" + PLAYERCARDSUM);
 
+  //Build player cards image as <img src="./cards/4C.svg">
+
+  let cardImg = document.createElement("img");
+  cardImg.src = "./cards/" + PLAYERCARDARRAY[playerLastCardIndex].img;
+  document.getElementById("player-cards").append(cardImg);
+
   PLAYERJOURNEYSTORY =
     PLAYERJOURNEYSTORY +
     "<br>After Player Hits, Player had additional " +
@@ -262,6 +279,23 @@ var computerTurn = function () {
       COMPUTERCARDSUM +
       ".<br>";
   } // end while(COMPUTERCARDSUM <= 17)
+
+  showComputerCards();
+};
+
+var reduceAce = function (playerSum, playerAceCount) {
+  while (playerSum > 21 && playerAceCount > 0) {
+    playerSum -= 10;
+    playerAceCount -= 1;
+  }
+  return playerSum;
+};
+
+var checkIsAce = function (card) {
+  if (card[0].name == ACE) {
+    return 1;
+  }
+  return 0;
 };
 
 var checkWhoWins = function () {
@@ -285,6 +319,8 @@ var checkWhoWins = function () {
 };
 
 var resetAllGlobalVariables = function () {
+  //document.getElementById("player-cards").innerHTML = "";
+
   SHUFFLEDDECK = [];
   PLAYERCARDARRAY = [];
   COMPUTERCARDARRAY = [];
@@ -294,6 +330,17 @@ var resetAllGlobalVariables = function () {
   COMPUTERJOURNEYSTORY = "";
   GAMEMODE = "CHOOSE_COMPUTER_PLAYER";
   COMPUTERPLAYER = "";
+};
+
+var showComputerCards = function () {
+  //remove the 2 face down cards first then show the face up cards
+  document.getElementById("computer-cards").innerHTML = "";
+
+  for (i = 0; i < COMPUTERCARDARRAY.length; i++) {
+    let cardImg = document.createElement("img");
+    cardImg.src = "./cards/" + COMPUTERCARDARRAY[i].img;
+    document.getElementById("computer-cards").append(cardImg);
+  }
 };
 
 var main = function (input) {
@@ -312,14 +359,29 @@ var main = function (input) {
 
       if (input == 1) {
         COMPUTERPLAYER = "赌神 - God of Gambler";
+
+        let cardImg = document.createElement("img");
+        cardImg.src = "./img/chowyunfatt3.jpg";
+        document.getElementById("computer-img").append(cardImg);
+
         myOutputValue =
           "You chose to battle 赌神 - God of Gambler. <br>Click Submit to start!";
       } else if (input == 2) {
         COMPUTERPLAYER = "赌侠 - Knight of Gambler";
+
+        let cardImg = document.createElement("img");
+        cardImg.src = "./img/andylau.png";
+        document.getElementById("computer-img").append(cardImg);
+
         myOutputValue =
           "You chose to battle 赌侠 - Knight of Gambler. <br>Click Submit to start!";
       } else if (input == 3) {
         COMPUTERPLAYER = "赌圣 - Saint of Gambler";
+
+        let cardImg = document.createElement("img");
+        cardImg.src = "./img/chowstephen2.jpg";
+        document.getElementById("computer-img").append(cardImg);
+
         myOutputValue =
           "You chose to battle 赌圣 - Saint of Gambler. <br>Click Submit to start!";
       } else {
@@ -346,6 +408,7 @@ var main = function (input) {
         name: ACE,
         suit: "spade",
         rank: 1,
+        img: "AS.svg",
       };
       COMPUTERCARDARRAY.push(test1);
       // end for testing
@@ -357,6 +420,19 @@ var main = function (input) {
       // Store the sum of cards
       COMPUTERCARDSUM = sumInitialTwoCards(COMPUTERCARDARRAY);
       PLAYERCARDSUM = sumInitialTwoCards(PLAYERCARDARRAY);
+
+      //Build computer cards image as <img src="./cards/4C.svg">
+      for (let i = 0; i < 2; i++) {
+        let cardImg = document.createElement("img");
+        cardImg.src = "./cards/RED_BACK.svg";
+        document.getElementById("computer-cards").append(cardImg);
+      }
+      //Build player cards image as <img src="./cards/4C.svg">
+      for (let i = 0; i < 2; i++) {
+        let cardImg = document.createElement("img");
+        cardImg.src = "./cards/" + PLAYERCARDARRAY[i].img;
+        document.getElementById("player-cards").append(cardImg);
+      }
 
       COMPUTERJOURNEYSTORY =
         COMPUTERPLAYER +
@@ -466,7 +542,7 @@ var main = function (input) {
           " cards.<br>" +
           "Your final sum value is " +
           PLAYERCARDSUM +
-          "<br><br> Play again?";
+          "<br><br> Play again? Click Restart button";
       } else if (input == "Stand") {
         computerTurn();
 
@@ -490,6 +566,7 @@ var main = function (input) {
 
   // reset here so that above JOURNEYSTORIES var are not reset
   if (reset == 1) {
+    showComputerCards();
     resetAllGlobalVariables();
   }
   return myOutputValue;

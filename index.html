@@ -154,12 +154,29 @@
         .header {
           font-size: 2rem;
         }
+
+        #btn-one {
+          width: 100px;
+          height: 50px;
+          font-size: 20px;
+        }
+
+        #player-cards img {
+          height: 175px;
+          width: 125px;
+          margin: 1px;
+        }
+
+        #computer-cards img {
+          height: 175px;
+          width: 125px;
+          margin: 1px;
+        }
       }
     </style>
   </head>
 
   <body>
-    <!--
     <h1 class="header">
       <img
         class="logo-img"
@@ -170,14 +187,21 @@
         class="logo-img"
         src="https://ra-web-files.s3.ap-southeast-1.amazonaws.com/all/brand/logo.png"
       />
-    </h1>  
-    <h1 class="header">♣️ Basics - Blackjack ♠️</h1>
-    -->
+    </h1>
+    <h1 class="header">♣️ Basics - Blackjack (SG version) ♠️</h1>
+
     <div id="container">
+      <h2>Computer: <span id="computer-img"></span></h2>
+      <div id="computer-cards"></div>
+      <h2>Player: <span id="player-sum"></span></h2>
+      <div id="player-cards"></div>
+
       <p>Input:</p>
       <input id="input-field" />
       <br />
       <button id="submit-button">Submit</button>
+      <button onClick="window.location.reload();">Restart</button>
+
       <p>Output:</p>
       <div id="output-div">
         <b>Who do you want to play with?</b><br /><br />
