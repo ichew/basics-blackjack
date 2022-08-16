@@ -7,7 +7,7 @@ var COMPUTERCARDSUM = 0;
 var PLAYERJOURNEYSTORY = "";
 var COMPUTERJOURNEYSTORY = "";
 
-var GAMEMODE = "CHOOSE_COMPUTER_PLAYER"; //game start at CHOOSE_COMPUTER_PLAYER
+var GAMEMODE = "CHOOSE_COMPUTER_PLAYER"; //game still start at CHOOSE_COMPUTER_PLAYER
 var COMPUTERWINTEXT = " wins! <br><br>Play again? Click Restart to play again.";
 var PLAYERWINTEXT =
   "Player, you won! <br><br>Play again? Click Restart to play again.";
@@ -265,6 +265,21 @@ var computerTurn = function () {
   showComputerCards();
 };
 
+var reduceAce = function (playerSum, playerAceCount) {
+  while (playerSum > 21 && playerAceCount > 0) {
+    playerSum -= 10;
+    playerAceCount -= 1;
+  }
+  return playerSum;
+};
+
+var checkIsAce = function (card) {
+  if (card[0].name == ACE) {
+    return 1;
+  }
+  return 0;
+};
+
 var checkWhoWins = function () {
   // Compare computer and player cards by 21
   if (COMPUTERCARDSUM <= 21 && PLAYERCARDSUM <= 21) {
@@ -320,7 +335,8 @@ var main = function (input) {
 
   switch (GAMEMODE) {
     case "CHOOSE_COMPUTER_PLAYER":
-      GAMEMODE = "DEAL"; //update gamemode to next stage
+      console.log("start of GAMEMODE =" + GAMEMODE);
+      GAMEMODE = "DEAL";
 
       // initialise <h2>Computer: </h2>
       var hTwo = document.createElement("h2");
@@ -367,12 +383,14 @@ var main = function (input) {
       break;
 
     case "DEAL": // beginning of play, each player is dealt 2 cards each
-      GAMEMODE = "3CARDS"; //update gamemode to next stage
+      console.log("start of GAMEMODE =" + GAMEMODE);
+      GAMEMODE = "3CARDS";
 
       // shuffle a new deck at the start of each game
       SHUFFLEDDECK = shuffleCards(makeDeck());
 
-      /* for testing
+      // Draw cards from the top of the deck
+      // for testing
       console.log("========== NEW GAME ==============");
       var test1 = {
         name: ACE,
@@ -381,11 +399,8 @@ var main = function (input) {
         img: "AS.svg",
       };
       COMPUTERCARDARRAY.push(test1);
-      */
-      //end for testing
-
-      // Draw cards from the top of the deck
-      COMPUTERCARDARRAY.push(SHUFFLEDDECK.pop());
+      // end for testing
+      // computerCardArray.push(SHUFFLEDDECK.pop());
       PLAYERCARDARRAY.push(SHUFFLEDDECK.pop());
       COMPUTERCARDARRAY.push(SHUFFLEDDECK.pop());
       PLAYERCARDARRAY.push(SHUFFLEDDECK.pop());
@@ -440,19 +455,26 @@ var main = function (input) {
         PLAYERCARDSUM +
         ".";
 
+      console.log("comp - " + COMPUTERCARDSUM);
+      console.log("player - " + PLAYERCARDSUM);
+      console.log("going to nxt game =" + GAMEMODE);
+
       // in this case 0, only 2 cards are dealt, so must be banban or ban-luck
       if (COMPUTERCARDSUM == 21) {
         GAMEMODE = "CHOOSE_COMPUTER_PLAYER";
         whoWinsText = COMPUTERPLAYER + COMPUTERWINTEXT;
-        reset = 1; //reset all global variables since have a winner
+
+        reset = 1;
       } else if (PLAYERCARDSUM == 21) {
         GAMEMODE = "CHOOSE_COMPUTER_PLAYER";
         whoWinsText = PLAYERWINTEXT;
-        reset = 1; //reset all global variables since have a winner
+
+        reset = 1;
       } else if (PLAYERCARDSUM == 21 && COMPUTERCARDSUM == 21) {
         GAMEMODE = "CHOOSE_COMPUTER_PLAYER";
         whoWinsText = NOBODYWINEXT;
-        reset = 1; //reset all global variables since have a winner
+
+        reset = 1;
       } else {
         // 2 cards no winner so ask player to hit or continue
         whoWinsText = HITSTANDTOCONTINUE;
@@ -460,15 +482,18 @@ var main = function (input) {
       break;
 
     case "3CARDS": // round where player Hit and is dealt a 3rd card, or Stand and see who wins with 2 cards each
-      GAMEMODE = "4CARDS"; //update gamemode to next stage
+      console.log("Case1 - start of GAMEMODE =" + GAMEMODE);
+      GAMEMODE = "4CARDS";
 
       if (input == "Hit") {
         givePlayerOneMoreCard();
+
         whoWinsText = HITSTANDTOCONTINUE;
       } else if (input == "Stand") {
         computerTurn();
+
         whoWinsText = checkWhoWins();
-        reset = 1; //reset since checking who wins
+        reset = 1;
       } else {
         GAMEMODE = "3CARDS"; //do not reset as player never Hit or Stand
         myOutputValue = HITSTANDTOCONTINUE;
@@ -477,11 +502,11 @@ var main = function (input) {
       break;
 
     case "4CARDS": // round where player Hit is dealt a 4th card, or Stand and see who wins with player having 3 cards
+      console.log("Case2 - start of GAMEMODE =" + GAMEMODE);
       GAMEMODE = "5CARDS";
       if (input == "Hit") {
         givePlayerOneMoreCard();
 
-        //outputValue2 to store the 5th card gor-leng warning
         myOutputValue2 =
           "Player, you now have " +
           PLAYERCARDARRAY.length +
@@ -490,8 +515,9 @@ var main = function (input) {
           HITSTANDTOCONTINUE;
       } else if (input == "Stand") {
         computerTurn();
+
         whoWinsText = checkWhoWins();
-        reset = 1; //reset since checking who wins
+        reset = 1;
       } else {
         GAMEMODE = "4CARDS"; //do not reset as player never Hit or Stand
         myOutputValue = HITSTANDTOCONTINUE;
@@ -499,6 +525,7 @@ var main = function (input) {
       break;
 
     case "5CARDS": // round where player is dealt a 5th card
+      console.log("Case 3 - start of GAMEMODE =" + GAMEMODE);
       GAMEMODE = "CHOOSE_COMPUTER_PLAYER"; //reset
 
       if (input == "Hit") {
@@ -511,9 +538,9 @@ var main = function (input) {
           "Your final sum value is " +
           PLAYERCARDSUM +
           "<br><br> Play again? Click Restart button";
-        reset = 1;
       } else if (input == "Stand") {
         computerTurn();
+
         whoWinsText = checkWhoWins();
         reset = 1;
       } else {
@@ -538,7 +565,7 @@ var main = function (input) {
     showComputerCards();
     resetAllGlobalVariables();
 
-    //hide this id = "submit-button" so that only Restart btn is shown
+    //hide this id = "submit-button";
     console.log("x here");
     var submitBtn = document.querySelector("#submit-button");
     submitBtn.style.display = "none";
